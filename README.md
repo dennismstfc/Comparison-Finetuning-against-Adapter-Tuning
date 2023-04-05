@@ -1,1 +1,1 @@
-# Comparison BERT vs AdpaterBERT with lexGLUE
+# Comparison BERT vs AdpaterBERT using lexGLUE
