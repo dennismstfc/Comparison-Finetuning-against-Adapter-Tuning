@@ -15,7 +15,8 @@ def get_training_args(output_dir, logging_dir):
         save_strategy="epoch",
         save_steps=100,
         evaluation_strategy="epoch",
-        eval_steps=100
+        eval_steps=100,
+        load_best_model_at_end=True
     )
 
 
