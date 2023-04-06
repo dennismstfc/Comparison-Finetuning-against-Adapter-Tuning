@@ -1,9 +1,8 @@
 from src.task import TASK_DATA
-from src.data_preprocessing import get_preprocessed_data
 from src.metrics import *
 from src.training import get_training_args, MultilabelTrainer
 from src.utils import *
-from src.preprocessing_legacy import DataClass, MultipleChoiceDataset, Split
+from src.data_preprocessing import DataClass, MultipleChoiceDataset, Split
 
 from transformers import (
     AutoConfig,
@@ -15,6 +14,14 @@ from transformers import (
     AutoModelForMultipleChoice
 )
 
+'''
+TODO:
+- Add listings
+- Implement ecthr_a, ecthr_b
+- Select for all tasks the hyperparamters in the src/task.py file (use dict)
+- Implement adapter training for case_hold in train_adapter_models.py
+- Write script, which trains all 14 models sequentially
+'''
 
 if __name__ == "__main__":
     actual_task = "ledgar"
@@ -32,8 +39,6 @@ if __name__ == "__main__":
         finetuning_task=actual_task,
         use_fast=False if not actual_task == "case_hold" else True
     )
-
-
 
     # Defining output paths for training args
     output_dir, logging_dir = get_output_logging_paths(actual_task)
