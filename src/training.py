@@ -1,5 +1,5 @@
 from transformers import TrainingArguments, Trainer
-from transformers.adpaters import AdapterTrainer
+from transformers.adapters import AdapterTrainer
 import torch.nn as nn
 
 def get_training_args(output_dir, logging_dir):
