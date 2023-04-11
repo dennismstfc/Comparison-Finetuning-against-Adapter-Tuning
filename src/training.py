@@ -11,7 +11,7 @@ def get_training_args(output_dir, logging_dir):
         num_train_epochs=1000,
         per_device_train_batch_size=4,
         per_device_eval_batch_size=4,
-        learning_rate=5e-6,
+        learning_rate=3e-6,
         save_strategy="epoch",
         save_steps=100,
         evaluation_strategy="epoch",
