@@ -1,17 +1,17 @@
 from src.task import TASK_DATA
-from adapter_models.multi_classifier import get_adapter_model
 from src.metrics import *
+from adapter_models.multiple_choice_qa import BertAdapterMultipleChoiceModel
 from src.training import get_training_args, MultilabelAdapterTrainer 
 from src.utils import *
 from src.adapter import adapter_config
-from src.preprocessing_legacy import DataClass, MultipleChoiceDataset, Split
+from src.data_preprocessing import DataClass, MultipleChoiceDataset, Split
 
 from transformers import (
     AutoConfig,
     AutoTokenizer, 
     default_data_collator, 
     EarlyStoppingCallback,
-    AutoModelForMultipleChoice
+    Trainer
 )
 
 from transformers.adapters import (
@@ -21,7 +21,7 @@ from transformers.adapters import (
 )
 
 if __name__ == "__main__":
-    actual_task = "scotus"
+    actual_task = "case_hold"
     checkpoint = "bert-base-cased"
     adapter_name = "bottleneck_adapter"
     label_list = list(range(TASK_DATA[actual_task][0]))
@@ -45,34 +45,46 @@ if __name__ == "__main__":
         non_linearity="relu"
     )
 
-    model = BertAdapterModel.from_pretrained(
+    if actual_task != "case_hold":
+        model = BertAdapterModel.from_pretrained(
+                checkpoint,
+                config=config
+        )
+    else:
+        model = BertAdapterMultipleChoiceModel.from_pretrained(
             checkpoint,
             config=config
-    )
-        
+        )
+
     # Adding the actual adapter model
     if adapter_name not in model.config.adapters:
+        print("test")
         model.add_adapter(adapter_name, config=adapter_config)
     
     # Freezing all BERT Layers and enable the adapter tuning
     model.train_adapter(adapter_name)
     
-    # Adding the classifier
-    model.add_classification_head(
-        actual_task,
-        num_labels=TASK_DATA[actual_task][0],
-        activation_function=None,
-        overwrite_ok=True
-    )
+    print(model)
+    '''
+    Adding the classifier except for the case_hold model.
+    BertAdapterMultipleChoice already implements a classification
+    head in the class
+    '''
+    if actual_task != "case_hold":
+        model.add_classification_head(
+            actual_task,
+            num_labels=TASK_DATA[actual_task][0],
+            activation_function=None,
+            overwrite_ok=True
+        )
+
+        data_collator = default_data_collator
 
     # Defining output paths for training args
     create_output_folder(actual_task, "adapter_output")
     output_dir, logging_dir = get_output_logging_paths(actual_task, "adapter_output")
     training_args = get_training_args(output_dir, logging_dir)
 
-
-    if actual_task != "case_hold":
-        data_collator = default_data_collator
 
     if TASK_DATA[actual_task][1] == "multi_class":
         data_helper = DataClass(
@@ -126,11 +138,6 @@ if __name__ == "__main__":
     
     
     if actual_task == "case_hold":
-        model = AutoModelForMultipleChoice.from_pretrained(
-            checkpoint,
-            config=config
-        )
-
         train_dataset = MultipleChoiceDataset(
             tokenizer=tokenizer,
             task=actual_task,
@@ -145,7 +152,7 @@ if __name__ == "__main__":
             mode=Split.dev
         )
 
-        trainer = AdapterTrainer(
+        trainer = Trainer(
             model=model,
             args=training_args,
             train_dataset=train_dataset,
