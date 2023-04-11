@@ -23,11 +23,13 @@ if __name__ == "__main__":
     
     start_vanilla_finetuning(
         checkpoint=checkpoint,
-        actual_task=actual_task
+        actual_task=actual_task,
+        seed=110110
     )
 
     start_adapter_tuning(
         checkpoint=checkpoint,
         actual_task=actual_task,
-        adapter_name="bottlneck_adapter"
+        adapter_name="bottlneck_adapter",
+        seed=110110
     )

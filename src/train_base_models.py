@@ -11,7 +11,8 @@ from transformers import (
     default_data_collator, 
     Trainer,
     EarlyStoppingCallback,
-    AutoModelForMultipleChoice
+    AutoModelForMultipleChoice,
+    set_seed
 )
 
 '''
@@ -21,12 +22,16 @@ TODO:
 - Implement adapter training for case_hold in train_adapter_models.py
 - Write script, which trains all 14 models sequentially
 - Add comments for all functions
+- Add seed functionality
 '''
 
 def start_vanilla_finetuning(
         checkpoint, 
-        actual_task
+        actual_task,
+        seed
         ):
+
+    set_seed(seed)
 
     label_list = list(range(TASK_DATA[actual_task][0]))
 
@@ -43,6 +48,7 @@ def start_vanilla_finetuning(
     )
 
     # Defining output paths for training args
+    create_output_folder(actual_task)
     output_dir, logging_dir = get_output_logging_paths(actual_task)
     training_args = get_training_args(output_dir, logging_dir)
 
@@ -63,9 +69,6 @@ def start_vanilla_finetuning(
         )
         train_dataset, test_dataset, eval_dataset = data_helper.get_preprocessed_data()
         data_collator = default_data_collator
-            
-        
-        create_output_folder(actual_task)
         
         trainer = Trainer(
             model = model,

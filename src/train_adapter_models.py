@@ -10,7 +10,8 @@ from transformers import (
     AutoTokenizer, 
     default_data_collator, 
     EarlyStoppingCallback,
-    Trainer
+    Trainer,
+    set_seed
 )
 
 from transformers.adapters import (
@@ -22,8 +23,12 @@ from transformers.adapters import (
 def start_adapter_tuning(
         checkpoint,
         actual_task,
-        adapter_name
+        adapter_name,
+        seed
         ):
+    
+    set_seed(seed)
+
     label_list = list(range(TASK_DATA[actual_task][0]))
 
     tokenizer = AutoTokenizer.from_pretrained(
@@ -80,7 +85,7 @@ def start_adapter_tuning(
         data_collator = default_data_collator
 
     # Defining output paths for training args
-    create_output_folder(actual_task, "adapter_output")
+    create_output_folder(actual_task, "../adapter_output")
     output_dir, logging_dir = get_output_logging_paths(actual_task, "adapter_output")
     training_args = get_training_args(output_dir, logging_dir)
 
