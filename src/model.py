@@ -2,16 +2,7 @@ import torch
 import torch.nn as nn
 from typing import Optional
 
-from transformers import AutoModelForMultipleChoice
 from transformers.adapters import BertAdapterModel
-
-
-def get_base_model(checkpoint, config):
-    return AutoModelForMultipleChoice.from_pretrained(
-        checkpoint,
-        config=config
-    )
-
 
 
 '''
@@ -28,7 +19,6 @@ class BertAdapterMultipleChoiceModel(BertAdapterModel):
         self.dropout = nn.Dropout(classifier_dropout)
         self.classifier = nn.Linear(config.hidden_size, 1)
         
-        # Let's see if we need that shit
         self.post_init()
     
     def forward(
@@ -79,25 +69,4 @@ class BertAdapterMultipleChoiceModel(BertAdapterModel):
         output = (reshaped_logits,) + outputs[2:]
         return ((loss,) + output) if loss is not None else output
 
-
-def get_adapter_model(
-        checkpoint,
-        config,
-        adapter_config,
-        adapter_name="bottleneck_adapter"
-        ):
-    
-    model = BertAdapterMultipleChoiceModel.from_pretrained(
-        checkpoint,
-        config
-    )
-
-    # Adding the actual adpater model
-    model.add_adapter(adapter_name, config=adapter_config)
-
-    # Freezing all BERT layers and enable the adpater tuning
-    model.train_adapter(adapter_name)
-
-    # No classifier is needed here, because it was already implemented in BertAdapterMultipleChoiceModel class
-    return model
 
