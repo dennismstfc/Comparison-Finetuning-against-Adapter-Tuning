@@ -42,12 +42,25 @@ class DataClass:
 
 
     def _preprocess_function(self, examples):
-        batch = self.tokenizer(
-            examples["text"],
-            padding=self.padding,
-            max_length=self.max_seq_length,
-            truncation=self.trunc
-        )
+        if self.task == "ecthr_a" or self.task == "ecthr_b":
+            cases = []
+            for case in examples["text"]:
+                cases.append(f"\n".join(case))
+            
+            batch = self.tokenizer(
+                cases,
+                padding=self.padding,
+                max_length=self.max_seq_length,
+                truncation=self.trunc
+            )
+        
+        else:
+            batch = self.tokenizer(
+                examples["text"],
+                padding=self.padding,
+                max_length=self.max_seq_length,
+                truncation=self.trunc
+            )
 
         if self.variant == "multi_class":
             batch["label"] = [self.label_list.index(labels) for labels in examples["label"]]
