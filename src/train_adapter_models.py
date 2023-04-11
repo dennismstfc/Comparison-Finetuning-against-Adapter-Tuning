@@ -1,10 +1,9 @@
-from src.task import TASK_DATA
-from src.metrics import *
-from adapter_models.multiple_choice_qa import BertAdapterMultipleChoiceModel
-from src.training import get_training_args, MultilabelAdapterTrainer 
-from src.utils import *
-from src.adapter import adapter_config
-from src.data_preprocessing import DataClass, MultipleChoiceDataset, Split
+from task import TASK_DATA
+from metrics import *
+from model import BertAdapterMultipleChoiceModel
+from training import get_training_args, MultilabelAdapterTrainer 
+from utils import *
+from data_preprocessing import DataClass, MultipleChoiceDataset, Split
 
 from transformers import (
     AutoConfig,
@@ -20,10 +19,11 @@ from transformers.adapters import (
     BertAdapterModel
 )
 
-if __name__ == "__main__":
-    actual_task = "case_hold"
-    checkpoint = "bert-base-cased"
-    adapter_name = "bottleneck_adapter"
+def start_adapter_tuning(
+        checkpoint,
+        actual_task,
+        adapter_name
+        ):
     label_list = list(range(TASK_DATA[actual_task][0]))
 
     tokenizer = AutoTokenizer.from_pretrained(
@@ -58,17 +58,16 @@ if __name__ == "__main__":
 
     # Adding the actual adapter model
     if adapter_name not in model.config.adapters:
-        print("test")
         model.add_adapter(adapter_name, config=adapter_config)
     
     # Freezing all BERT Layers and enable the adapter tuning
     model.train_adapter(adapter_name)
     
-    print(model)
     '''
     Adding the classifier except for the case_hold model.
     BertAdapterMultipleChoice already implements a classification
-    head in the class
+    head in the class. Also a data_collator is only needed if multi-class
+    or multi-label classifier are trained.
     '''
     if actual_task != "case_hold":
         model.add_classification_head(
@@ -163,7 +162,14 @@ if __name__ == "__main__":
 
     
 
-    train_result = trainer.train()
+    trainer.train()
+    trainer.save_model()
 
 
+if __name__ == "__main__":
+    start_adapter_tuning(
+        "bert-base-cased",
+        actual_task="ecthr_a",
+        adapter_name="bottle_neck_adapter"
+    )
     

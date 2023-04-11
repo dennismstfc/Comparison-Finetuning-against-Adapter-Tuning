@@ -1,8 +1,8 @@
-from src.task import TASK_DATA
-from src.metrics import *
-from src.training import get_training_args, MultilabelTrainer
-from src.utils import *
-from src.data_preprocessing import DataClass, MultipleChoiceDataset, Split
+from task import TASK_DATA
+from metrics import *
+from training import get_training_args, MultilabelTrainer
+from utils import *
+from data_preprocessing import DataClass, MultipleChoiceDataset, Split
 
 from transformers import (
     AutoConfig,
@@ -17,15 +17,17 @@ from transformers import (
 '''
 TODO:
 - Add listings
-- Implement ecthr_a, ecthr_b
 - Select for all tasks the hyperparamters in the src/task.py file (use dict)
 - Implement adapter training for case_hold in train_adapter_models.py
 - Write script, which trains all 14 models sequentially
+- Add comments for all functions
 '''
 
-if __name__ == "__main__":
-    actual_task = "ledgar"
-    checkpoint = "bert-base-cased"
+def start_vanilla_finetuning(
+        checkpoint, 
+        actual_task
+        ):
+
     label_list = list(range(TASK_DATA[actual_task][0]))
 
     tokenizer = AutoTokenizer.from_pretrained(
@@ -96,7 +98,8 @@ if __name__ == "__main__":
             padding="max_length",
             max_seq_length=128,
             trunc=True,
-            label_list=label_list        )
+            label_list=label_list        
+            )
 
         train_dataset, test_dataset, eval_dataset = data_helper.get_preprocessed_data()
         data_collator = default_data_collator
@@ -144,8 +147,8 @@ if __name__ == "__main__":
         )
 
     
-
-    train_result = trainer.train()
+    trainer.train()
+    trainer.save_model()
 
 
     
