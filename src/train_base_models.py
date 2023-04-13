@@ -22,7 +22,6 @@ TODO:
 - Implement adapter training for case_hold in train_adapter_models.py
 - Write script, which trains all 14 models sequentially
 - Add comments for all functions
-- Add seed functionality
 '''
 
 def start_vanilla_finetuning(
@@ -52,24 +51,28 @@ def start_vanilla_finetuning(
     output_dir, logging_dir = get_output_logging_paths(actual_task)
     training_args = get_training_args(output_dir, logging_dir)
 
-    if TASK_DATA[actual_task][1] == "multi_class":
+    if actual_task != "case_hold":
         model = AutoModelForSequenceClassification.from_pretrained(
             checkpoint,
             config=config
         )
+        
+        data_collator = default_data_collator
 
         data_helper = DataClass(
             actual_task,
-            TASK_DATA[actual_task][1],
             tokenizer=tokenizer,
+            variant=TASK_DATA[actual_task][1],
             padding="max_length",
-            max_seq_length=512,
+            max_seq_length=128,
             trunc=True,
-            label_list=label_list       
-        )
+            label_list=label_list        
+            )
+
         train_dataset, test_dataset, eval_dataset = data_helper.get_preprocessed_data()
-        data_collator = default_data_collator
-        
+
+
+    if TASK_DATA[actual_task][1] == "multi_class":
         trainer = Trainer(
             model = model,
             args = training_args,
@@ -83,31 +86,6 @@ def start_vanilla_finetuning(
 
 
     if TASK_DATA[actual_task][1] == "multi_label":
-        config = AutoConfig.from_pretrained(
-            checkpoint,
-            num_labels=TASK_DATA[actual_task][0],
-            finetuning_task=TASK_DATA[actual_task][1]
-        )
-
-        model = AutoModelForSequenceClassification.from_pretrained(
-                    checkpoint,
-                    config=config
-                )
-
-        data_helper = DataClass(
-            actual_task,
-            tokenizer=tokenizer,
-            variant=TASK_DATA[actual_task][1],
-            padding="max_length",
-            max_seq_length=128,
-            trunc=True,
-            label_list=label_list        
-            )
-
-        train_dataset, test_dataset, eval_dataset = data_helper.get_preprocessed_data()
-        data_collator = default_data_collator
-
-
         trainer = MultilabelTrainer(
                 model=model,
                 args=training_args,
@@ -151,6 +129,7 @@ def start_vanilla_finetuning(
 
     
     trainer.train()
+    trainer.evaluate()
     trainer.save_model()
 
 
