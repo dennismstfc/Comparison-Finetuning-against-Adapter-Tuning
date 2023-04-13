@@ -8,7 +8,7 @@ def get_training_args(output_dir, logging_dir):
         logging_dir=logging_dir,
         logging_strategy="epoch",
         logging_steps=100,
-        num_train_epochs=10e-6,
+        num_train_epochs=100000,
         per_device_train_batch_size=4,
         per_device_eval_batch_size=4,
         learning_rate=3e-6,
