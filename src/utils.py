@@ -42,7 +42,7 @@ def log_training_state(
     file_dir = os.path.join(task_dir, "early_stopping_log.txt")
 
     with open(file_dir, "w") as f:
-        f.write(f"Epoch: {epoch}")
-        f.write(f"Total floating operations: {total_flos}")
-        f.write(f"Best model checkpoint: {best_model_checkpoint}")
+        f.write(f"Epoch: {epoch}\n")
+        f.write(f"Total floating operations: {total_flos}\n")
+        f.write(f"Best model checkpoint: {best_model_checkpoint}\n")
     
