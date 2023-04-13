@@ -10,7 +10,6 @@ from transformers import (
     AutoConfig,
     AutoTokenizer, 
     default_data_collator, 
-    EarlyStoppingCallback,
     Trainer,
     set_seed
 )
@@ -114,7 +113,7 @@ def start_adapter_tuning(
             compute_metrics = compute_multi_class_metrics,
             tokenizer = tokenizer,
             data_collator = data_collator,
-            callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
+            callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience, base_dir="adapter_output")]
         )
 
 
@@ -139,7 +138,7 @@ def start_adapter_tuning(
                 compute_metrics=compute_multi_label_metrics,
                 tokenizer=tokenizer,
                 data_collator=data_collator,
-                callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
+                callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience, base_dir="adapter_output")]
         )
     
     
@@ -164,19 +163,10 @@ def start_adapter_tuning(
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
             compute_metrics=compute_multiple_choice_metrics,
-            callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
+            callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience, base_dir="adapter_output")]
         )
 
     
 
     trainer.train()
     trainer.save_model()
-
-
-if __name__ == "__main__":
-    start_adapter_tuning(
-        "bert-base-cased",
-        actual_task="ecthr_a",
-        adapter_name="bottle_neck_adapter"
-    )
-    
