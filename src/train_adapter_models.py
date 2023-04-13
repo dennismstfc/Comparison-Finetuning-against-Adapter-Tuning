@@ -54,8 +54,8 @@ def start_adapter_tuning(
 
     if actual_task != "case_hold":
         model = BertAdapterModel.from_pretrained(
-                checkpoint,
-                config=config
+            checkpoint,
+            config=config
         )
     else:
         model = BertAdapterMultipleChoiceModel.from_pretrained(
@@ -86,13 +86,6 @@ def start_adapter_tuning(
 
         data_collator = default_data_collator
 
-    # Defining output paths for training args
-    create_output_folder(actual_task, "adapter_output")
-    output_dir, logging_dir = get_output_logging_paths(actual_task, "adapter_output")
-    training_args = get_training_args(output_dir, logging_dir)
-
-
-    if TASK_DATA[actual_task][1] == "multi_class":
         data_helper = DataClass(
             actual_task,
             TASK_DATA[actual_task][1],
@@ -105,6 +98,30 @@ def start_adapter_tuning(
 
         train_dataset, test_dataset, eval_dataset = data_helper.get_preprocessed_data()
 
+    else:
+        train_dataset = MultipleChoiceDataset(
+            tokenizer=tokenizer,
+            task=actual_task,
+            max_seq_length=512,
+            mode=Split.train
+        )
+
+        eval_dataset = MultipleChoiceDataset(
+            tokenizer = tokenizer,
+            task="case_hold",
+            max_seq_length=512,
+            mode=Split.dev
+        )
+
+
+    # Defining output paths for training args
+    create_output_folder(actual_task, "adapter_output")
+    output_dir, logging_dir = get_output_logging_paths(actual_task, "adapter_output")
+    training_args = get_training_args(output_dir, logging_dir)
+
+
+    # Configure the the trainer for each task type
+    if TASK_DATA[actual_task][1] == "multi_class":
         trainer = AdapterTrainer(
             model = model,
             args = training_args,
@@ -118,18 +135,6 @@ def start_adapter_tuning(
 
 
     if TASK_DATA[actual_task][1] == "multi_label":
-        data_helper = DataClass(
-            actual_task,
-            tokenizer=tokenizer,
-            variant=TASK_DATA[actual_task][1],
-            padding="max_length",
-            max_seq_length=128,
-            trunc=True,
-            label_list=label_list        
-            )
-
-        train_dataset, test_dataset, eval_dataset = data_helper.get_preprocessed_data()
-
         trainer = MultilabelAdapterTrainer(
                 model=model,
                 args=training_args,
@@ -143,20 +148,6 @@ def start_adapter_tuning(
     
     
     if actual_task == "case_hold":
-        train_dataset = MultipleChoiceDataset(
-            tokenizer=tokenizer,
-            task=actual_task,
-            max_seq_length=256,
-            mode=Split.train
-        )
-
-        eval_dataset = MultipleChoiceDataset(
-            tokenizer = tokenizer,
-            task="case_hold",
-            max_seq_length=256,
-            mode=Split.dev
-        )
-
         trainer = Trainer(
             model=model,
             args=training_args,

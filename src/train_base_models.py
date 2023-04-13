@@ -65,12 +65,31 @@ def start_vanilla_finetuning(
             tokenizer=tokenizer,
             variant=TASK_DATA[actual_task][1],
             padding="max_length",
-            max_seq_length=128,
+            max_seq_length=512,
             trunc=True,
             label_list=label_list        
-            )
+        )
 
         train_dataset, test_dataset, eval_dataset = data_helper.get_preprocessed_data()
+    else:
+        model = AutoModelForMultipleChoice.from_pretrained(
+            checkpoint,
+            config=config
+        )
+
+        train_dataset = MultipleChoiceDataset(
+            tokenizer=tokenizer,
+            task=actual_task,
+            max_seq_length=512,
+            mode=Split.train
+        )
+
+        eval_dataset = MultipleChoiceDataset(
+            tokenizer = tokenizer,
+            task="case_hold",
+            max_seq_length=512,
+            mode=Split.dev
+        )
 
 
     if TASK_DATA[actual_task][1] == "multi_class":
@@ -100,25 +119,6 @@ def start_vanilla_finetuning(
     
     
     if actual_task == "case_hold":
-        model = AutoModelForMultipleChoice.from_pretrained(
-            checkpoint,
-            config=config
-        )
-
-        train_dataset = MultipleChoiceDataset(
-            tokenizer=tokenizer,
-            task=actual_task,
-            max_seq_length=256,
-            mode=Split.train
-        )
-
-        eval_dataset = MultipleChoiceDataset(
-            tokenizer = tokenizer,
-            task="case_hold",
-            max_seq_length=256,
-            mode=Split.dev
-        )
-
         trainer = Trainer(
             model=model,
             args=training_args,
@@ -130,8 +130,4 @@ def start_vanilla_finetuning(
 
 
     trainer.train()
-    trainer.evaluate()
     trainer.save_model()
-
-
-    
