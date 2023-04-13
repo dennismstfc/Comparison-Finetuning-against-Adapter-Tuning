@@ -25,3 +25,24 @@ def get_output_logging_paths(task_name, base_dir="output"):
     base_dir = os.path.join("..", base_dir)
     task_dir = os.path.join(base_dir, task_name)
     return task_dir, os.path.join(task_dir, "log") 
+
+'''
+Logs the current training state into a .txt-file. This function is used in order
+to track where the EarlyStopping Callback would have applied.
+'''
+def log_training_state(
+        task_name, 
+        epoch,
+        total_flos,
+        best_model_checkpoint,
+        base_dir="output"
+        ):
+    base_dir = os.path.join("..", base_dir)
+    task_dir = os.path.join(base_dir, task_name)
+    file_dir = os.path.join(task_dir, "early_stopping_log.txt")
+
+    with open(file_dir, "w") as f:
+        f.write(f"Epoch: {epoch}")
+        f.write(f"Total floating operations: {total_flos}")
+        f.write(f"Best model checkpoint: {best_model_checkpoint}")
+    
