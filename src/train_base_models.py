@@ -3,6 +3,7 @@ from metrics import *
 from training import get_training_args, MultilabelTrainer
 from utils import *
 from data_preprocessing import DataClass, MultipleChoiceDataset, Split
+from custom_callback import TimeCallBack
 
 from transformers import (
     AutoConfig,
@@ -12,22 +13,22 @@ from transformers import (
     Trainer,
     EarlyStoppingCallback,
     AutoModelForMultipleChoice,
-    set_seed
+    set_seed,
 )
 
 '''
 TODO:
 - Add listings
-- Select for all tasks the hyperparamters in the src/task.py file (use dict)
-- Implement adapter training for case_hold in train_adapter_models.py
-- Write script, which trains all 14 models sequentially
 - Add comments for all functions
 '''
+
 
 def start_vanilla_finetuning(
         checkpoint, 
         actual_task,
-        seed
+        seed,
+        train_duration,
+        early_stopping_patience
         ):
 
     set_seed(seed)
@@ -81,7 +82,7 @@ def start_vanilla_finetuning(
             compute_metrics = compute_multi_class_metrics,
             tokenizer = tokenizer,
             data_collator = data_collator,
-            callbacks = [EarlyStoppingCallback(early_stopping_patience=3)]
+            callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
         )
 
 
@@ -94,7 +95,7 @@ def start_vanilla_finetuning(
                 compute_metrics=compute_multi_label_metrics,
                 tokenizer=tokenizer,
                 data_collator=data_collator,
-                callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
+                callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
         )
     
     
@@ -124,10 +125,10 @@ def start_vanilla_finetuning(
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
             compute_metrics=compute_multiple_choice_metrics,
-            callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
+            callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
         )
 
-    
+
     trainer.train()
     trainer.evaluate()
     trainer.save_model()

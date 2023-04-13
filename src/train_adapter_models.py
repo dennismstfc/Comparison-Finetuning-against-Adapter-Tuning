@@ -4,6 +4,7 @@ from model import BertAdapterMultipleChoiceModel
 from training import get_training_args, MultilabelAdapterTrainer 
 from utils import *
 from data_preprocessing import DataClass, MultipleChoiceDataset, Split
+from custom_callback import TimeCallBack
 
 from transformers import (
     AutoConfig,
@@ -24,7 +25,9 @@ def start_adapter_tuning(
         checkpoint,
         actual_task,
         adapter_name,
-        seed
+        seed,
+        train_duration,
+        early_stopping_patience
         ):
     
     set_seed(seed)
@@ -111,7 +114,7 @@ def start_adapter_tuning(
             compute_metrics = compute_multi_class_metrics,
             tokenizer = tokenizer,
             data_collator = data_collator,
-            callbacks = [EarlyStoppingCallback(early_stopping_patience=3)]
+            callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
         )
 
 
@@ -136,7 +139,7 @@ def start_adapter_tuning(
                 compute_metrics=compute_multi_label_metrics,
                 tokenizer=tokenizer,
                 data_collator=data_collator,
-                callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
+                callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
         )
     
     
@@ -161,7 +164,7 @@ def start_adapter_tuning(
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
             compute_metrics=compute_multiple_choice_metrics,
-            callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
+            callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
         )
 
     
