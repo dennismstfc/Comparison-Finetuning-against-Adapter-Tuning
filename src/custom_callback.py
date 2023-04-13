@@ -26,7 +26,7 @@ class TimeCallBack(TrainerCallback):
         self.base_dir = base_dir
         self.training_duration = training_duration
         self.early_stopping_patience = early_stopping_patience
-        self.early_stopping_treshold = early_stopping_threshold
+        self.early_stopping_threshold = early_stopping_threshold
         self.early_stopping_patience_counter = 0
         self.determined_early_stop_checkpoint = False
 
@@ -52,6 +52,7 @@ class TimeCallBack(TrainerCallback):
 
             self.check_metric_value(args, state, control, metric_value)
             if self.early_stopping_patience_counter >= self.early_stopping_patience:
+                print("\n\n The current epoch is according to the early stop the best! Logging the parameters... \n\n")
                 # Log the current state
                 log_training_state(
                     task_name=self.task_name,
@@ -76,7 +77,5 @@ class TimeCallBack(TrainerCallback):
             print("\n\nThe training time has ended. Finishing the training!\n\n")
             control.should_training_stop = True
 
-        print(f"Proceeded training time: {(proceeded_training_time / (60)) / 60} h")
+        print(f"Proceeded training time: {(proceeded_training_time / (60 * 60))} h of {self.training_duration / (60 * 60)} h")
     
-
-
