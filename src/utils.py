@@ -53,3 +53,13 @@ def log_training_state(
         f.write(f"Total floating operations: {total_flos}\n")
         f.write(f"Best model checkpoint: {best_model_checkpoint}\n")
     
+'''
+Creates a .txt-file that stores informations about failed training attempt.
+'''
+def write_error_log(task_name: str, error_msg: str) -> None:
+    file_dir = os.path.join("..", task_name)
+    file_dir = os.path.join(file_dir, "_training_error_log.txt")
+    
+    with open(file_dir, "w") as f:
+        f.write(f"Training failed for: {task_name}\n")
+        f.write(f"Occured error: {error_msg}\n")
