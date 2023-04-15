@@ -4,7 +4,10 @@ import os
 This function creates based on task_name a folder, that is used to store the
 outputs of the model during training.
 '''
-def create_output_folder(task_name, base_dir = "output"):
+def create_output_folder(
+        task_name: str, 
+        base_dir: str = "output"
+        ) -> None:
     base_dir = os.path.join("..", base_dir)
     # First check if the general output folder exists
     if not os.path.exists(base_dir):
@@ -20,8 +23,12 @@ def create_output_folder(task_name, base_dir = "output"):
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
 
+
 # Returns the paths to a task-specific output folder and log subdirectory
-def get_output_logging_paths(task_name, base_dir="output"):
+def get_output_logging_paths(
+        task_name: str, 
+        base_dir: str ="output"
+        ) -> tuple[str, str]:
     base_dir = os.path.join("..", base_dir)
     task_dir = os.path.join(base_dir, task_name)
     return task_dir, os.path.join(task_dir, "log") 
@@ -31,12 +38,12 @@ Logs the current training state into a .txt-file. This function is used in order
 to track where the EarlyStopping Callback would have applied.
 '''
 def log_training_state(
-        task_name, 
-        epoch,
-        total_flos,
-        best_model_checkpoint,
-        base_dir="output"
-        ):
+        task_name: str, 
+        epoch: float,
+        total_flos: float,
+        best_model_checkpoint: str,
+        base_dir: str ="output"
+        ) -> None:
     base_dir = os.path.join("..", base_dir)
     task_dir = os.path.join(base_dir, task_name)
     file_dir = os.path.join(task_dir, "early_stopping_log.txt")

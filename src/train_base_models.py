@@ -24,12 +24,12 @@ TODO:
 
 
 def start_vanilla_finetuning(
-        checkpoint, 
-        actual_task,
-        seed,
-        train_duration,
-        early_stopping_patience
-        ):
+        checkpoint: str, 
+        actual_task: str,
+        seed: int,
+        train_duration: float,
+        early_stopping_patience: int
+        ) -> None:
 
     set_seed(seed)
 

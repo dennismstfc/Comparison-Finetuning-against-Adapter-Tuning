@@ -2,13 +2,17 @@ from transformers import TrainingArguments, Trainer
 from transformers.adapters import AdapterTrainer
 import torch.nn as nn
 
-def get_training_args(output_dir, logging_dir):
+def get_training_args(
+        output_dir: str, 
+        logging_dir: str
+        ) -> TrainingArguments:
     return TrainingArguments(
+        do_predict=True,
         output_dir=output_dir,
         logging_dir=logging_dir,
         logging_strategy="epoch",
         logging_steps=100,
-        num_train_epochs=100000,
+        num_train_epochs=1000,
         per_device_train_batch_size=4,
         per_device_eval_batch_size=4,
         learning_rate=3e-6,
