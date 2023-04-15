@@ -15,7 +15,7 @@ def run_vanilla_finetuning_all(
         ) -> None:
 
     print("Starting Vanilla Finetuning for all tasks.")
-    print(f"Each downstream model gets trained for {train_duration / {60 * 60}} h.")
+    print(f"Each downstream model gets trained for {train_duration / (60 * 60)} h.")
     for actual_task in TASK_DATA.keys():
         try:
             start_vanilla_finetuning(
@@ -41,7 +41,7 @@ def run_adapter_tuning_all(
         ) -> None:
 
     print("Starting Adapter Tuning for all tasks.")
-    print(f"Each downstream model gets trained for {train_duration / {60 * 60}} h.")
+    print(f"Each downstream model gets trained for {train_duration / (60 * 60)} h.")
     for actual_task in TASK_DATA.keys():
         try:
             start_adapter_tuning(
