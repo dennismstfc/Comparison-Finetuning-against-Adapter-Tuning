@@ -128,9 +128,9 @@ class TimeCallBack(TrainerCallback):
 
             for root, dirs, _ in os.walk(output_path, topdown=True):
                 for sub_dir in dirs:
-                    if "checkpoint" in sub_dir and sub_dir != self.best_model:
+                    tmp_path = os.path.join(root, sub_dir)
+                    if "checkpoint" in sub_dir and tmp_path != self.best_model:
                         print(self.best_model)
-                        tmp_path = os.path.join(root, sub_dir)
                         try:
                             shutil.rmtree(tmp_path)
                         except:
