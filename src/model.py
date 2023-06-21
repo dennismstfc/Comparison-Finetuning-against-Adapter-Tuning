@@ -1,16 +1,16 @@
 import torch
 import torch.nn as nn
-from typing import Optional
+from typing import Optional, Union, Tuple
 
 from transformers.adapters import BertAdapterModel
 
 
 '''
 Modified model from:
-\transformers\src\transformers\models\bert\modeling_bert.py
+\transformers\src\transformers\models\bert\modeling_bert.py (11.04.2023)
 '''
 class BertAdapterMultipleChoiceModel(BertAdapterModel):
-    def __init__(self, config):
+    def __init__(self, config) -> None:
         super().__init__(config)
         self.bert = BertAdapterModel(config)
         classifier_dropout = (
@@ -28,7 +28,7 @@ class BertAdapterMultipleChoiceModel(BertAdapterModel):
         token_type_ids: Optional[torch.Tensor] = None,
         inputs_embeds: Optional[torch.Tensor] = None,
         labels: Optional[torch.Tensor] = None,
-    ):
+    ) -> Union[Tuple[float, ...], Tuple[float]]:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):
             Labels for computing the multiple choice classification loss. Indices should be in `[0, ...,
@@ -68,5 +68,3 @@ class BertAdapterMultipleChoiceModel(BertAdapterModel):
 
         output = (reshaped_logits,) + outputs[2:]
         return ((loss,) + output) if loss is not None else output
-
-

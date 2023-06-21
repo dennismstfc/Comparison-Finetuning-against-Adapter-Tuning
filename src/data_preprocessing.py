@@ -34,7 +34,7 @@ class DataClass:
         self.label_list = label_list
 
 
-    def _get_splitted_data(self):
+    def _get_splitted_data(self) -> List[Dataset, Dataset, Dataset]:
         train = load_dataset("lex_glue", self.task, split="train")
         test = load_dataset("lex_glue", self.task, split="test")
         eval = load_dataset("lex_glue", self.task, split="validation")

@@ -28,7 +28,7 @@ class TimeCallBack(TrainerCallback):
             early_stopping_patience: int, 
             early_stopping_threshold: float = 0.0,
             base_dir: str = "output" 
-            ):
+            ) -> None:
         self.task_name = task_name
         self.base_dir = base_dir
         self.training_duration = training_duration
@@ -93,7 +93,7 @@ class TimeCallBack(TrainerCallback):
             state: TrainerState, 
             control: TrainerControl, 
             **kwargs
-            ):
+            ) -> None:
         self.training_start = time.time()
         start_time_formatted = time.gmtime(self.training_start)
         print(f"Training start: {time.strftime('%Y-%m-%d %H:%M:%S', start_time_formatted)}")
@@ -105,7 +105,7 @@ class TimeCallBack(TrainerCallback):
             state: TrainerState, 
             control: TrainerControl, 
             **kwargs
-            ):
+            ) -> None:
         actual_time = time.time()
         proceeded_training_time = actual_time - self.training_start
 
@@ -113,7 +113,9 @@ class TimeCallBack(TrainerCallback):
             print("\n\nThe training time has ended. Finishing the training!\n\n")
             control.should_training_stop = True
 
-        print(f"Proceeded training time: {(proceeded_training_time / (60 * 60))} h of {self.training_duration / (60 * 60)} h")
+        proceeded_time_hours = proceeded_training_time / (60 * 60)
+        train_duration_hours = self.training_duration / (60 * 60)
+        print(f"Proceeded training time: {proceeded_time_hours} h of {train_duration_hours} h")
         print(f"Done: {proceeded_training_time / self.training_duration} %")
 
 

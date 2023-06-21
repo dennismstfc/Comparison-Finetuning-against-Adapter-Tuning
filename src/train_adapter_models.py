@@ -101,7 +101,7 @@ def start_adapter_tuning(
             label_list=label_list       
         )
 
-        train_dataset, test_dataset, eval_dataset = data_helper.get_preprocessed_data()
+        train_dataset, eval_dataset, test_dataset = data_helper.get_preprocessed_data()
 
     else:
         train_dataset = MultipleChoiceDataset(
