@@ -1,1 +1,1 @@
-# Comparison BERT vs AdpaterBERT using lexGLUE
+# Empirical study to examine the impact of adapter tuning of the BERT architecture with LexGLUE
