@@ -1,6 +1,6 @@
 from datasets import load_dataset
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Tuple, Any, Dict
 from enum import Enum
 
 from torch.utils.data.dataset import Dataset
@@ -24,7 +24,7 @@ class DataClass:
                 max_seq_length, 
                 trunc,
                 label_list
-                ):
+                ) -> None:
         self.task = task
         self.variant = variant
         self.tokenizer = tokenizer
@@ -34,14 +34,14 @@ class DataClass:
         self.label_list = label_list
 
 
-    def _get_splitted_data(self) -> List[Dataset, Dataset, Dataset]:
+    def _get_splitted_data(self) -> Tuple[Dataset, Dataset, Dataset]:
         train = load_dataset("lex_glue", self.task, split="train")
+        dev = load_dataset("lex_glue", self.task, split="validation")
         test = load_dataset("lex_glue", self.task, split="test")
-        eval = load_dataset("lex_glue", self.task, split="validation")
-        return train, test, eval
+        return train, dev, test
 
 
-    def _preprocess_function(self, examples):
+    def _preprocess_function(self, examples: Dict[str, Any]) -> Dict[str, Any]:
         if self.task == "ecthr_a" or self.task == "ecthr_b":
             cases = []
             for case in examples["text"]:
@@ -70,8 +70,8 @@ class DataClass:
 
         return batch
 
-    def get_preprocessed_data(self):
-        train_dataset, test_dataset, eval_dataset = self._get_splitted_data()
+    def get_preprocessed_data(self) -> Tuple[Dataset, Dataset, Dataset]:
+        train_dataset, dev_dataset, test_dataset = self._get_splitted_data()
 
         train_dataset = train_dataset.map(
             self._preprocess_function,
@@ -79,19 +79,19 @@ class DataClass:
             desc="Running tokenizer on train_dataset"
         )
 
-        test_dataset = test_dataset.map(
+        dev_dataset = dev_dataset.map(
             self._preprocess_function,
             batched=True,
             desc="Running tokenizer on test_dataset"
         )
 
-        eval_dataset = eval_dataset.map(
+        test_dataset = test_dataset.map(
             self._preprocess_function,
             batched=True,
             desc="Running tokenizer on eval_dataset"
         )
 
-        return train_dataset, test_dataset, eval_dataset 
+        return train_dataset, dev_dataset, test_dataset 
 
 
 
