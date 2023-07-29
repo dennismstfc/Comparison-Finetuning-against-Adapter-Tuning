@@ -1,1 +1,1 @@
-# Empirical study to examine the impact of adapter tuning of the BERT architecture with LexGLUE
+# Experiment setup to examine the impact of adapter tuning of the BERT architecture with LexGLUE
