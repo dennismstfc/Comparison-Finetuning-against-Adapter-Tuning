@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 
 '''
 This function creates based on task_name a folder, that is used to store the
@@ -28,7 +29,7 @@ def create_output_folder(
 def get_output_logging_paths(
         task_name: str, 
         base_dir: str ="output"
-        ) -> tuple[str, str]:
+        ) -> Tuple[str, str]:
     base_dir = os.path.join("..", base_dir)
     task_dir = os.path.join(base_dir, task_name)
     return task_dir, os.path.join(task_dir, "log") 

@@ -1,6 +1,9 @@
-from transformers import TrainingArguments, Trainer
+from transformers import TrainingArguments, Trainer, PreTrainedModel, ModelOutput
 from transformers.adapters import AdapterTrainer
+
+import torch
 import torch.nn as nn
+from typing import Dict, Tuple, Union
 
 def get_training_args(
         output_dir: str, 
@@ -25,7 +28,10 @@ def get_training_args(
 
 
 class MultilabelTrainer(Trainer):
-    def compute_loss(self, model, inputs, return_outputs=False):
+    def compute_loss(self, 
+                     model: PreTrainedModel, 
+                     inputs: Dict[str, torch.Tensor], 
+                     return_outputs: bool = False) -> Union[torch.Tensor, Tuple[torch.Tensor, ModelOutput]]:
         labels = inputs.pop("labels")
         outputs = model(**inputs)
         logits = outputs.logits
@@ -36,7 +42,10 @@ class MultilabelTrainer(Trainer):
 
 
 class MultilabelAdapterTrainer(AdapterTrainer):
-    def compute_loss(self, model, inputs, return_outputs=False):
+    def compute_loss(self, 
+                     model: PreTrainedModel, 
+                     inputs: Dict[str, torch.Tensor], 
+                     return_outputs: bool = False) -> Union[torch.Tensor, Tuple[torch.Tensor, ModelOutput]]:
         labels = inputs.pop("labels")
         outputs = model(**inputs)
         logits = outputs.logits

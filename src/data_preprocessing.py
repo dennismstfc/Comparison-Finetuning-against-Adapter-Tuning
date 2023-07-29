@@ -176,7 +176,7 @@ class MultipleChoiceDataset(Dataset):
         max_seq_length: Optional[int] = None,
         overwrite_cache=False,
         mode: Split = Split.train,
-    ):
+    ) -> None:
         dataset = datasets.load_dataset('lex_glue', task)
         tokenizer_name = re.sub('[^a-z]+', ' ', tokenizer.name_or_path).title().replace(' ', '')
         cached_features_file = os.path.join(
@@ -215,8 +215,8 @@ class MultipleChoiceDataset(Dataset):
                 )
                 torch.save(self.features, cached_features_file)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.features)
 
-    def __getitem__(self, i) -> InputFeatures:
+    def __getitem__(self, i: int) -> InputFeatures:
         return self.features[i]

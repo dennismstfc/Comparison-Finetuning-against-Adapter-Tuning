@@ -1,9 +1,10 @@
+from typing import Dict
 from sklearn.metrics import f1_score
 import numpy as np
 from scipy.special import expit
 from transformers import EvalPrediction
 
-def compute_multi_class_metrics(p: EvalPrediction) -> dict[float, float]:
+def compute_multi_class_metrics(p: EvalPrediction) -> Dict[str, float]:
     logits = p.predictions[0] if isinstance(p.predictions, tuple) else p.predictions
     preds = np.argmax(logits, axis=1)
     macro_f1 = f1_score(y_true=p.label_ids, y_pred=preds, average='macro', zero_division=0)
@@ -11,7 +12,7 @@ def compute_multi_class_metrics(p: EvalPrediction) -> dict[float, float]:
     return {'macro-f1': macro_f1, 'micro-f1': micro_f1}
 
 
-def compute_multi_label_metrics(p: EvalPrediction) -> dict[float, float]:
+def compute_multi_label_metrics(p: EvalPrediction) -> Dict[str, float]:
     # Fix gold labels
     y_true = np.zeros((p.label_ids.shape[0], p.label_ids.shape[1] + 1), dtype=np.int32)
     y_true[:, :-1] = p.label_ids
@@ -28,7 +29,7 @@ def compute_multi_label_metrics(p: EvalPrediction) -> dict[float, float]:
     return {'macro-f1': macro_f1, 'micro-f1': micro_f1}
 
 
-def compute_multiple_choice_metrics(p: EvalPrediction) -> dict[float, float]:
+def compute_multiple_choice_metrics(p: EvalPrediction) -> Dict[str, float]:
     preds = np.argmax(p.predictions, axis=1)
     # Compute macro and micro F1 for 5-class CaseHOLD task
     macro_f1 = f1_score(y_true=p.label_ids, y_pred=preds, average='macro', zero_division=0)
