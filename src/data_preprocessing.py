@@ -94,7 +94,10 @@ class DataClass:
         return train_dataset, dev_dataset, test_dataset 
 
 
-
+'''
+Code from: https://github.com/coastalcph/lex-glue/blob/main/experiments/casehold_helpers.py
+(29.07.2023)
+'''
 @dataclass(frozen=True)
 class InputFeatures:
     """
