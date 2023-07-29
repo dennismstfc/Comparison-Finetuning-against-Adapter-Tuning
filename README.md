@@ -1,15 +1,8 @@
 # Experimental setup to examine the impact of adapter tuning of the BERT architecture with LexGLUE
-In my bachelor thesis I dealt with the determination of the impact of adding adapter modules to the BERT architecture. As part of this work, I implemented an empirical study that compares training methods and determines the resulting differences. This repository contains the source code that performs the training of the BERT architecture using finetuning on the one hand and adapter tuning on the other. Adapter modules with the bottleneck architecture were used for adapter tuning. Since the 
+In my bachelor thesis I investigated the effects of adding adapter modules to the BERT architecture. As part of this work, I conducted an empirical study comparing different training methods and analyzing the resulting differences. This repository contains the source code that implements the training of the BERT architecture using finetuning and adapter tuning. Adapter modules with a bottleneck architecture were used for adapter tuning. 
 
 ## Methodology behind this experimental setup
 Due to the different loss values produced by the two training methods, in addition to using early-stopping to determine the model, a user-defined callback was developed to allow for timed training. Early-stopping determines the optimal model state by comparing training and evaluation loss. However, this creates challenges because different loss magnitudes are generated depending on the model variant resulting from the selected training method. This can lead to ambiguities in model comparison. Therefore, time-dependent training was introduced, where models are trained with both training methods over a period of 24 hours, for example, and then compared. This minimizes the variability in the comparisons. Nevertheless, the models determined by early-stopping are also stored, since these are of great importance in practical applications and a comparison is therefore essential.
-
-## Table of Contents
-1. [Installation and Usage](#installation and usage)
-3. [Contributing](#contributing)
-5. [License](#license)
-6. [Credits](#credits)
-7. [Contact](#contact)
 
 ## Installation & Usage
 **Linux/macOS**
@@ -29,7 +22,7 @@ Due to the different loss values produced by the two training methods, in additi
 6. Use the command `python -m run_experiment` to run the script
 7. 
 ## Credits
-Please check out the [LexGLUE](https://github.com/coastalcph/lex-glue)-Repository, that provided scripts of the data preprocessing. 
+Please check out the  [LexGLUE](https://github.com/coastalcph/lex-glue)-Repository, that provided scripts of the data preprocessing. 
 
 ## Contact
 Dennis Mustafic - dennismustafic@gmail.com
