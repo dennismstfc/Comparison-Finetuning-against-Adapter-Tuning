@@ -75,7 +75,7 @@ if __name__ == "__main__":
     start_adapter_tuning(
         checkpoint=checkpoint,
         actual_task=actual_task,
-        adapter_name="bottlneck_adapter",
+        adapter_name="bottleneck_adapter",
         seed=110110,
         train_duration=train_duration,
         early_stopping_patience=3
