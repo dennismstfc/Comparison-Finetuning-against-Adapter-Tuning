@@ -70,7 +70,7 @@ def start_vanilla_finetuning(
             label_list=label_list        
         )
 
-        train_dataset, eval_dataset, test_dataset = data_helper.get_preprocessed_data()
+        train_dataset, dev_dataset, test_dataset = data_helper.get_preprocessed_data()
     else:
         model = AutoModelForMultipleChoice.from_pretrained(
             checkpoint,
@@ -84,7 +84,7 @@ def start_vanilla_finetuning(
             mode=Split.train
         )
 
-        eval_dataset = MultipleChoiceDataset(
+        dev_dataset = MultipleChoiceDataset(
             tokenizer = tokenizer,
             task="case_hold",
             max_seq_length=512,
@@ -94,10 +94,10 @@ def start_vanilla_finetuning(
 
     if TASK_DATA[actual_task][1] == "multi_class":
         trainer = Trainer(
-            model = model,
-            args = training_args,
-            train_dataset = train_dataset,
-            eval_dataset = eval_dataset,
+            model=model,
+            args=training_args,
+            train_dataset=train_dataset,
+            eval_dataset=dev_dataset,
             compute_metrics = compute_multi_class_metrics,
             tokenizer = tokenizer,
             data_collator = data_collator,
@@ -110,7 +110,7 @@ def start_vanilla_finetuning(
                 model=model,
                 args=training_args,
                 train_dataset=train_dataset,
-                eval_dataset=eval_dataset,
+                eval_dataset=dev_dataset,
                 compute_metrics=compute_multi_label_metrics,
                 tokenizer=tokenizer,
                 data_collator=data_collator,
@@ -123,7 +123,7 @@ def start_vanilla_finetuning(
             model=model,
             args=training_args,
             train_dataset=train_dataset,
-            eval_dataset=eval_dataset,
+            eval_dataset=dev_dataset,
             compute_metrics=compute_multiple_choice_metrics,
             callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
         )
