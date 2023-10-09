@@ -107,14 +107,14 @@ def start_vanilla_finetuning(
 
     if TASK_DATA[actual_task][1] == "multi_label":
         trainer = MultilabelTrainer(
-                model=model,
-                args=training_args,
-                train_dataset=train_dataset,
-                eval_dataset=dev_dataset,
-                compute_metrics=compute_multi_label_metrics,
-                tokenizer=tokenizer,
-                data_collator=data_collator,
-                callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
+            model=model,
+            args=training_args,
+            train_dataset=train_dataset,
+            eval_dataset=dev_dataset,
+            compute_metrics=compute_multi_label_metrics,
+            tokenizer=tokenizer,
+            data_collator=data_collator,
+            callbacks=[TimeCallBack(actual_task, train_duration, early_stopping_patience)]
         )
     
     
